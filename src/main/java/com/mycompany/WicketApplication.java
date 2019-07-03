@@ -1,6 +1,7 @@
 package com.mycompany;
 
 import org.apache.wicket.Application;
+import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.ws.WebSocketSettings;
@@ -57,6 +58,7 @@ public class WicketApplication extends WebApplication
 
 		wicketApplicationKey = getApplicationKey();
 
+		mountPage("boring", BoringStartPage.class);
 		mountPage("start", StartWebSocketPage.class);
 		mountPage("background", BackgroundWorkPage.class);
 
@@ -65,16 +67,40 @@ public class WicketApplication extends WebApplication
 
 		getFrameworkSettings().setSerializer(new JavaSerializer(getApplicationKey()){
 			public byte[] serialize(Object obj) {
-				log.info("serialize " + obj.getClass() + " " + obj.hashCode());
+				if (obj instanceof Page) {
+					Page p = (Page) obj;
+					log.info("===serialize " + abreviateClassName(p) + " " + p.getId());
+				}
 				return super.serialize(obj);
 			}
 
 			public Object deserialize(byte[] data) {
 				Object res = super.deserialize(data);
-				log.info("deserialize " + res.getClass() + " " + res.hashCode());
+				if (res instanceof Page) {
+					Page p = (Page) res;
+					log.info("---deserialize " + abreviateClassName(p) + " " + p.getId());
+				}
 				return res;
 			}
 		});
 
 	}
+
+
+
+
+	public static String abreviateClassName(Object obj) {
+		String fullName = obj.getClass().getName();
+		int dotIdx = fullName.lastIndexOf('.');
+
+		String res = null;
+		if (dotIdx != -1) {
+			res = fullName.substring(dotIdx+1);
+		} else {
+			res = fullName;
+		}
+
+		return res;
+	}
+
 }

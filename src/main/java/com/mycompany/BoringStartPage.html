@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org">
+	<body>
+	<h1>Boring Start page without websockets</h1>
+
+	<div>
+		<p>
+			Pressing the link redircts to the background web socket page.
+			The back ground page waits for a websocket connection, then kicks off a worker thread.
+			When the worker thread completes the background page is refreshed to show results.
+		</p>
+
+		<p>
+			Problem.
+			Going directly to the background page works fine.
+			Going to the background page via the link does not, seems there are multiple instances.
+			The connected message is null when the worker completes (it should not be).
+		</p>
+
+
+
+	</div>
+
+	<a wicket:id="pressMe" class="button is-danger">
+		Broken
+	</a>
+
+	<br>
+
+	<a wicket:id="worksBtn" class="button is-success">
+		Works
+	</a>
+
+	</body>
+</html>

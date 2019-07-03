@@ -5,6 +5,7 @@ import org.apache.wicket.event.IEvent;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.ws.api.WebSocketBehavior;
 import org.apache.wicket.protocol.ws.api.WebSocketRequestHandler;
+import org.apache.wicket.protocol.ws.api.event.WebSocketConnectedPayload;
 import org.apache.wicket.protocol.ws.api.event.WebSocketPushPayload;
 import org.apache.wicket.protocol.ws.api.message.ClosedMessage;
 import org.apache.wicket.protocol.ws.api.message.ConnectedMessage;
@@ -12,6 +13,8 @@ import org.apache.wicket.protocol.ws.api.message.IWebSocketPushMessage;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static com.mycompany.WicketApplication.abreviateClassName;
 
 
 public class WebSocketPage extends WebPage {
@@ -58,7 +61,7 @@ public class WebSocketPage extends WebPage {
 
   protected void broadcast(IWebSocketPushMessage message) {
     if (connectedMessage != null) {
-      log.info("Broadcasting " + message);
+      log.info("Broadcasting " + abreviateClassName(message) );
       WicketApplication.broadcast(connectedMessage, message);
     } else {
       log.info("Not broadcasting, connectedMessage is null?");
@@ -70,7 +73,7 @@ public class WebSocketPage extends WebPage {
   }
 
   protected void onWebSocketMessage(WebSocketRequestHandler handler, IWebSocketPushMessage message) {
-
+    log.info("onWebSocketMessage: {}, {}", abreviateClassName(this), abreviateClassName(message) );
   }
 
 
@@ -78,11 +81,22 @@ public class WebSocketPage extends WebPage {
   public void onEvent(IEvent<?> event) {
     super.onEvent(event);
 
-    if (event.getPayload() instanceof WebSocketPushPayload) {
+    if (event.getPayload() instanceof WebSocketConnectedPayload) {
+      log.info("onEvent WebSocketConnectedPayload");
+      WebSocketConnectedPayload wsc = (WebSocketConnectedPayload)event.getPayload();
+
+//      // can we update components here?  Does not seem to work
+//      connectedMessage = wsc.getMessage();
+//      onWebSocketMessage(wsc.getHandler(), new WebSocketConnected());
+
+
+    } else if (event.getPayload() instanceof WebSocketPushPayload) {
       log.info("onEvent websocketpushpayload");
+
     } else {
-      log.info("onEvent other " + event.getPayload());
+      log.info("onEvent other " + abreviateClassName(event.getPayload()) );
     }
 
   }
+
 }
