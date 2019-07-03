@@ -61,7 +61,7 @@ public class BackgroundWorkPage extends WebSocketPage {
       });
 
       future.exceptionally(ex->{
-        log.error("big caclulation failed", ex);
+        log.error("big calculation failed", ex);
         return null;
       });
 
